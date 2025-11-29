@@ -174,34 +174,17 @@ def save_toc_to_json(toc_structure, output_path):
         json.dump(toc_structure, f, ensure_ascii=False, indent=2)
     print(f"目錄已儲存至: {output_path}")
 
-
-def print_structure(structure, indent=0):
-    """遞迴顯示目錄結構"""
-    for title, data in structure.items():
-        prefix = "    " * indent
-        page_info = f"[p.{data['page']}]" if data.get("page") else ""
-        has_content = "[有內容]" if data.get("content") else ""
-        print(f"{prefix}- {title} {page_info} {has_content}")
-
-        if data.get("children"):
-            print_structure(data["children"], indent + 1)
-
-
 def main(file_path: str):
     pdf, toc_items = parse_pdf_toc(file_path)
     structure = build_hierarchy(toc_items)
 
     all_pages = collect_all_pages(structure)
-    print(structure)
 
     fill_leaf_content(pdf, structure, all_pages)
 
     clean_structure = clean_structure_for_json(structure)
 
     save_toc_to_json(clean_structure, f"output/{Path(file_path).stem}_structured.json")
-
-    print("\n=== 目錄結構 ===")
-    print_structure(clean_structure)
 
 
 if __name__ == "__main__":
